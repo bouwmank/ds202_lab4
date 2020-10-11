@@ -8,9 +8,7 @@ output: html_document
 ## Part one: Cleaning data
 Although the three Excel sheets are loaded into R, they are not useful before some cleaning. Manipulate the three imported data frames, so that in the cleaned dataset:
 
-1. The player names and opponent names are factors.
-
-     Answer
+0. Load Files
      
 ```{r}
 # dplyr
@@ -71,11 +69,11 @@ For the following questions, work on the cleaned data frames defClean, offClean,
 
 1. Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named stat.
 
-     Answer
+     Cleaned data pivoted
      
 ```{r}
 defClean %>%
-  pivot_longer(Tackles_Solo:Pass_PB, names_to = "Stat", values_to = "Score") -> defClean
+  pivot_longer(Tackles_Solo:Pass_PB, names_to = "stat", values_to = "Score") -> defClean
 
 str(defClean)
 print(defClean)
@@ -83,18 +81,24 @@ print(defClean)
      
 2. Compare the distributions of the defensive statistics. What defensive skills are rare?
 
-     Answer
+     Turnover_FF, Turnover_FR, and Turnover_Int are all about the same in terms of rarity, with the 0 count reaching 500. Tackles_Sack is the next rarest with 0 reaching almost 500. The Turnover skills are the rarest with a largest count of 0.
      
 ```{r}
-
+ggplot(defClean, aes(x = Score)) +  geom_bar() + facet_wrap(~stat, scales = 'free_y')
 ```
      
 3. Did ISU have better defense against Iowa or Notre Dame? Answer this question by creating a scatterplot with x- and y-axes being the number of solo tackles (of each player). A large number of solo tackles is an indicator of good defense.
 
-     Answer
+     ISU had better defense in the UNI game. The tackles reach over 6 per player where as in the Notre Dame game they only cross the 5 per player thresh hold.
      
 ```{r}
+defClean %>%
+  filter(stat == "Tackles_Solo" & Opponent_Opponent == "UNI") -> SoloUNI
+defClean %>%
+  filter(stat == "Tackles_Solo" & Opponent_Opponent == "Notre Dame") -> SoloND
 
+ggplot(SoloUNI, aes(x=Score, y=Score)) + geom_point() + labs(title="ISU vs UNI")
+ggplot(SoloND, aes(x=Score, y=Score)) + geom_point()  + labs(title="ISU vs Notre Dame")
 ```
      
 Now turn our attention to the player biography.

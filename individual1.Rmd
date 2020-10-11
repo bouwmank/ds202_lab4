@@ -22,10 +22,15 @@ library(ggplot2)
 library(tidyr)
 #Libary
 library(readxl)
-defClean <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+defense <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+
+defClean <- defense %>%
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)
+str(defClean)
 
 defClean %>%
-  pivot_longer(Tackles_Solo:Pass_PB, names_to = "Stat", values_to = "Score") -> defClean
+  pivot_longer(Tackles_Solo:Pass_PB, names_to = "stat", values_to = "Score") -> defClean
 
 print(defClean)
 ```
@@ -34,7 +39,8 @@ print(defClean)
 # Question 2
 
 ```{r}
-
+ggplot(defClean, aes(x = Score)) + geom_histogram(bins = 6) + facet_wrap(~stat, scales = 'free_y')
+ggplot(defClean, aes(x = Score)) +  geom_bar() + facet_wrap(~stat, scales = 'free_y')
 ```
 
 
@@ -42,7 +48,11 @@ print(defClean)
 
 ```{r}
 defClean %>%
-  select(Name:Score) %>%
-  group_by(Opponent_Opponent)
+  filter(stat == "Tackles_Solo" & Opponent_Opponent == "UNI") -> SoloUNI
+defClean %>%
+  filter(stat == "Tackles_Solo" & Opponent_Opponent == "UNI") -> SoloND
+
+ggplot(SoloUNI, aes(x=Score, y=Score)) + geom_point()
+ggplot(SoloND, aes(x=Score, y=Score)) + geom_point()
 ```
 
