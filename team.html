@@ -396,15 +396,15 @@ library(readxl)
 defense &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Defensive&#39;)
 offensive &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Offensive&#39;)
 Biography &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Biography&#39;)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li><p>All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric. (Optional: Learn to mutate multiple columns systematically using the ?across function in `dplyr)</p>
-<p>Answer</p></li>
+<ol style="list-style-type: decimal">
+<li><p>The player names and opponent names are factors.</p>
+<pre><code> In both of these blocks I will both turn names and opponent names to factors and also change the columns to numeric   </code></pre></li>
 </ol>
 <pre class="r"><code>defClean &lt;- defense %&gt;%
-              mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;%
-              mutate_if(is.character, as.numeric, na.rm = TRUE)
+              mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;% #changing Name and Opponent_Opponent in offClean to factors
+              mutate_if(is.character, as.numeric, na.rm = TRUE) #turning values to numeric
 str(defClean)</code></pre>
-<pre><code>## tibble [502 x 11] (S3: tbl_df/tbl/data.frame)
+<pre><code>## tibble [502 × 11] (S3: tbl_df/tbl/data.frame)
 ##  $ Name             : Factor w/ 43 levels &quot;Akers, Landen&quot;,..: 40 40 40 40 40 40 40 40 40 40 ...
 ##  $ Opponent_Opponent: Factor w/ 13 levels &quot;Baylor&quot;,&quot;Iowa&quot;,..: 12 2 11 1 8 13 10 7 6 9 ...
 ##  $ Tackles_Solo     : num [1:502] 4 4 3 4 3 1 7 3 6 5 ...
@@ -417,16 +417,16 @@ str(defClean)</code></pre>
 ##  $ Pass_QBH         : num [1:502] 1 0 0 0 0 0 0 0 1 0 ...
 ##  $ Pass_PB          : num [1:502] 1 2 0 0 0 1 0 0 0 0 ...</code></pre>
 <pre class="r"><code>offClean &lt;- offensive %&gt;%
-              mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;%
-              mutate_if(is.character, as.numeric, na.rm = TRUE)</code></pre>
+              mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;% #changing Name and Opponent_Opponent in defClean to factors
+              mutate_if(is.character, as.numeric, na.rm = TRUE) #turning values to numeric</code></pre>
 <pre><code>## Warning: Problem with `mutate()` input `Passing_CMP-ATT`.
-## x NAs introduced by coercion
-## i Input `Passing_CMP-ATT` is `.Primitive(&quot;as.double&quot;)(`Passing_CMP-ATT`, na.rm = TRUE)`.</code></pre>
+## ℹ NAs introduced by coercion
+## ℹ Input `Passing_CMP-ATT` is `.Primitive(&quot;as.double&quot;)(`Passing_CMP-ATT`, na.rm = TRUE)`.</code></pre>
 <pre><code>## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion</code></pre>
 <pre class="r"><code>offClean &lt;- offClean %&gt;% 
-                replace(is.na(.), 0)
+                replace(is.na(.), 0) #replacing NAs with 0s
 str(offClean)</code></pre>
-<pre><code>## tibble [195 x 12] (S3: tbl_df/tbl/data.frame)
+<pre><code>## tibble [195 × 12] (S3: tbl_df/tbl/data.frame)
 ##  $ Name             : Factor w/ 17 levels &quot;Akers, Landen&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Opponent_Opponent: Factor w/ 13 levels &quot;Baylor&quot;,&quot;Iowa&quot;,..: 12 2 11 1 8 13 10 7 6 9 ...
 ##  $ Rushing_ATT      : num [1:195] 0 0 1 0 0 0 0 0 0 0 ...
@@ -439,6 +439,11 @@ str(offClean)</code></pre>
 ##  $ Passing_YDS      : num [1:195] 0 0 0 0 0 0 0 0 0 0 ...
 ##  $ Passing_TD       : num [1:195] 0 0 0 0 0 0 0 0 0 0 ...
 ##  $ Passing_INT      : num [1:195] 0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><p>All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric. (Optional: Learn to mutate multiple columns systematically using the ?across function in `dplyr)</p>
+<p>This was done in defClean and offClean</p></li>
+</ol>
+<pre class="r"><code>#Already done in question 1</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li><p>Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)</p>
 <p>Answer</p></li>
@@ -446,13 +451,13 @@ str(offClean)</code></pre>
 <pre class="r"><code>bioClean &lt;- Biography %&gt;%
               mutate(Name = as.factor(Name)) %&gt;% 
               mutate(Height = gsub(&quot;-&quot;, &quot;.&quot;, Height)) %&gt;% #remove the - from height and convert to feet
-              mutate(across(c(&quot;Height&quot;), as.numeric)) #turning height into a numeric column
+              mutate(across(c(&quot;Height&quot;, &quot;Weight&quot;), as.numeric)) #turning height and weight into a numeric column
 str(bioClean)</code></pre>
-<pre><code>## tibble [105 x 7] (S3: tbl_df/tbl/data.frame)
+<pre><code>## tibble [105 × 7] (S3: tbl_df/tbl/data.frame)
 ##  $ Name      : Factor w/ 105 levels &quot;Akers, Landen&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
 ##  $ Position  : chr [1:105] &quot;Wide Receiver&quot; &quot;Tight End&quot; &quot;Wide Receiver&quot; &quot;Placekicker&quot; ...
 ##  $ Height    : num [1:105] 6 6.7 6.5 6 6 6.3 6.2 6.2 6 6.6 ...
-##  $ Weight    : chr [1:105] &quot;188&quot; &quot;245&quot; &quot;204&quot; &quot;195&quot; ...
+##  $ Weight    : num [1:105] 188 245 204 195 190 235 255 285 300 215 ...
 ##  $ Class     : chr [1:105] &quot;Redshirt Senior&quot; &quot;Redshirt Senior&quot; &quot;Redshirt Freshman&quot; &quot;Redshirt Senior&quot; ...
 ##  $ Hometown  : chr [1:105] &quot;Cedar Rapids, Iowa&quot; &quot;Nixa, Mo.&quot; &quot;Seffner, Fla.&quot; &quot;Naperville, Ill.&quot; ...
 ##  $ Highschool: chr [1:105] &quot;Washington&quot; &quot;Nixa&quot; &quot;Armwood&quot; &quot;Central&quot; ...</code></pre>
@@ -469,7 +474,7 @@ str(bioClean)</code></pre>
   pivot_longer(Tackles_Solo:Pass_PB, names_to = &quot;Stat&quot;, values_to = &quot;Score&quot;) -&gt; defClean
 
 str(defClean)</code></pre>
-<pre><code>## tibble [4,518 x 4] (S3: tbl_df/tbl/data.frame)
+<pre><code>## tibble [4,518 × 4] (S3: tbl_df/tbl/data.frame)
 ##  $ Name             : Factor w/ 43 levels &quot;Akers, Landen&quot;,..: 40 40 40 40 40 40 40 40 40 40 ...
 ##  $ Opponent_Opponent: Factor w/ 13 levels &quot;Baylor&quot;,&quot;Iowa&quot;,..: 12 12 12 12 12 12 12 12 12 2 ...
 ##  $ Stat             : chr [1:4518] &quot;Tackles_Solo&quot; &quot;Tackles_ASST&quot; &quot;Tackles_TFL&quot; &quot;Tackles_Sack&quot; ...
@@ -488,7 +493,7 @@ str(defClean)</code></pre>
 ##  8 White, Lawrence UNI               Pass_QBH         1
 ##  9 White, Lawrence UNI               Pass_PB          1
 ## 10 White, Lawrence Iowa              Tackles_Solo     4
-## # ... with 4,508 more rows</code></pre>
+## # … with 4,508 more rows</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li><p>Compare the distributions of the defensive statistics. What defensive skills are rare?</p>
 <p>Answer</p></li>

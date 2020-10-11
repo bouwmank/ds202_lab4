@@ -28,36 +28,28 @@ Biography <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
 
 1. The player names and opponent names are factors.
 
-        Answer
+        In both of these blocks I will both turn names and opponent names to factors and also change the columns to numeric   
         
 ```{r}
 defClean <- defense %>%
-              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) #changing Name and Opponent_Opponent in defClean to factors
-
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>% #changing Name and Opponent_Opponent in offClean to factors
+              mutate_if(is.character, as.numeric, na.rm = TRUE) #turning values to numeric
+str(defClean)
+  
 offClean <- offensive %>%
-              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) #changing Name and Opponent_Opponent in offClean to factors
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>% #changing Name and Opponent_Opponent in defClean to factors
+              mutate_if(is.character, as.numeric, na.rm = TRUE) #turning values to numeric
+offClean <- offClean %>% 
+                replace(is.na(.), 0) #replacing NAs with 0s
+str(offClean)
 ```
 
 2. All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric. (Optional: Learn to mutate multiple columns systematically using the ?across function in `dplyr)
 
-     Answer
+     This was done in defClean and offClean
      
 ```{r}
-#Will change all defensive stats to numeric
-defClean <- defClean %>%
-        mutate(across(c("Tackles_Solo", "Tackles_ASST", "Tackles_TFL", "Tackles_Sack", "Turnover_FF", "Turnover_FR", "Turnover_INT", "Pass_QBH", "Pass_PB"))) %>%
-        mutate_if(is.character, as.numeric, na.rm = TRUE) #turning all cols in defClean to numeric
-str(defClean)     
-
-
-#Will change all offensive stats to numeric
-offClean <- offClean %>% 
-                replace(is.na(.), 0) #replacing NAs with 0s
-offClean <- offClean %>%
-        mutate(across(c("Rushing_ATT", "Rushing_YDS", "Rushing_TD", "Receiving_REC", "Receiving_YDS", "Receiving_TD",    "Passing_CMP-ATT", "Passing_YDS", "Passing_TD", "Passing_INT", ))) %>%
-        mutate_if(is.character, as.numeric, na.rm = TRUE) #turning all the columns in offClean to numeric
-str(offClean)
-        
+#Already done in question 1
 ```
      
 3. Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)
@@ -94,7 +86,7 @@ print(defClean)
      Answer
      
 ```{r}
-ggplot(defClean, aes(x = score)) + geom_histogram() + facet_wrap(~stat, scales = 'free_y')
+
 ```
      
 3. Did ISU have better defense against Iowa or Notre Dame? Answer this question by creating a scatterplot with x- and y-axes being the number of solo tackles (of each player). A large number of solo tackles is an indicator of good defense.
