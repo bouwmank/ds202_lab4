@@ -171,6 +171,8 @@ offBio %>%
      Answer
      
 ```{r}
-
+defense18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Defensive')
+offensive18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Offensive')
+Biography18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
 ```
      
