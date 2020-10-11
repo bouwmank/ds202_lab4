@@ -108,16 +108,22 @@ Now turn our attention to the player biography.
      Answer
      
 ```{r}
-cleanBio %>% 
-  separate(Hometown, into = c("City", "State"), sep = ",")
+bioClean <- bioClean %>% 
+  separate(Hometown, into = c("City", "state"), sep = ",")
+head(bioClean)
 ```
      
 5. How many players are there from each state?
 
-     Answer
+     Most of ISU players are from Iowa.
      
 ```{r}
+ggplot(bioClean, aes(x = state, fill = state)) +  geom_bar() + labs(title = "Players home States") + theme(axis.text.x = element_text(size=10, angle=45))
 
+
+bioClean %>%
+  group_by(state) %>%
+  summarize(count = n())
 ```
      
 ## Part three: Joining data frames
@@ -127,7 +133,29 @@ cleanBio %>%
      Answer
      
 ```{r}
+bioClean %>%
+  inner_join(defClean) -> defBio
+defBio <- defBio %>%
+  select(state, Name) %>%
+  distinct(Name, .keep_all = TRUE)
 
+ggplot(defBio, aes(x = state)) +  geom_bar() + labs(title = "Def players home States")
+
+defBio %>%
+  group_by(state) %>%
+  summarize(count = n())
+
+bioClean %>%
+  inner_join(offClean) -> offBio
+offBio <- offBio %>%
+  select(state, Name) %>%
+  distinct(Name, .keep_all = TRUE)
+
+ggplot(offBio, aes(x = state)) +  geom_bar() + labs(title = "Off players home States")
+
+offBio %>%
+  group_by(state) %>%
+  summarize(count = n())
 ```
      
 2. How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?
