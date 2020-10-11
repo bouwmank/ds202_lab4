@@ -108,7 +108,8 @@ Now turn our attention to the player biography.
      Answer
      
 ```{r}
-
+cleanBio %>% 
+  separate(Hometown, into = c("City", "State"), sep = ",")
 ```
      
 5. How many players are there from each state?
