@@ -445,7 +445,7 @@ str(offClean)</code></pre>
 <pre class="r"><code>#Already done in question 1</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li><p>Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)</p>
-<p>Answer</p></li>
+<p>Printed answer.</p></li>
 </ol>
 <pre class="r"><code>bioClean &lt;- Biography %&gt;%
               mutate(Name = as.factor(Name)) %&gt;% 
@@ -566,7 +566,7 @@ head(bioClean)</code></pre>
 <h2>Part three: Joining data frames</h2>
 <ol style="list-style-type: decimal">
 <li><p>Find which states do the ISU defensive and offensive players come from. Create an appropriate summary.</p>
-<p>Answer</p></li>
+<p>Printed answer.</p></li>
 </ol>
 <pre class="r"><code>bioClean %&gt;%
   inner_join(defClean) -&gt; defBio</code></pre>

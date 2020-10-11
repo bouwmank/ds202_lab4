@@ -52,7 +52,7 @@ str(offClean)
      
 3. Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)
 
-     Answer
+     Printed answer.
      
 ```{r}
 bioClean <- Biography %>%
@@ -130,7 +130,7 @@ bioClean %>%
 
 1. Find which states do the ISU defensive and offensive players come from. Create an appropriate summary.
 
-     Answer
+     Printed answer.
      
 ```{r}
 bioClean %>%
