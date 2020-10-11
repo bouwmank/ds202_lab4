@@ -376,6 +376,27 @@ summary {
 <ol style="list-style-type: decimal">
 <li><p>The player names and opponent names are factors.</p>
 <p>Answer</p></li>
+</ol>
+<pre class="r"><code># dplyr
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># ggplot2
+library(ggplot2)
+#Libary
+library(tidyr)
+#Libary
+library(readxl)
+defense &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Defensive&#39;)
+offensive &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Offensive&#39;)
+Biography &lt;- read_excel(&#39;cyclonesFootball2019.xlsx&#39;, sheet=&#39;Biography&#39;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
 <li><p>All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric. (Optional: Learn to mutate multiple columns systematically using the ?across function in `dplyr)</p>
 <p>Answer</p></li>
 <li><p>Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)</p>

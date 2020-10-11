@@ -13,7 +13,17 @@ Although the three Excel sheets are loaded into R, they are not useful before so
      Answer
      
 ```{r}
-
+# dplyr
+library(dplyr)
+# ggplot2
+library(ggplot2)
+#Libary
+library(tidyr)
+#Libary
+library(readxl)
+defense <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+offensive <- read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
+Biography <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
 ```
      
 
