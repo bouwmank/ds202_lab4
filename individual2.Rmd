@@ -9,22 +9,128 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Part one: Cleaning data
+Although the three Excel sheets are loaded into R, they are not useful before some cleaning. Manipulate the three imported data frames, so that in the cleaned dataset:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+1. The player names and opponent names are factors.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+     Answer
+     
+```{r}
+# dplyr
+library(dplyr)
+# ggplot2
+library(ggplot2)
+#Libary
+library(tidyr)
+#Libary
+library(readxl)
+defense <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+offensive <- read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
+Biography <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
+```
+     
 
-```{r cars}
-summary(cars)
+2. All offensive and defensive statistics are numerical. The Weight column in biography is also numeric. (Optional: Learn to mutate multiple columns systematically using the ?across function in `dplyr)
+
+     Answer
+     
+```{r}
+cleanDef <- defense %>%
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)
+str(cleanDef)
+
+cleanOff <- offensive %>%
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)
+cleanOff <- cleanOff %>% 
+                replace(is.na(.), 0)
+str(cleanOff)
+```
+     
+3. Change the Height column in biography into numeric. (Hint: Use a unit that works well)
+
+     Answer
+     
+```{r}
+cleanBio <- Biography %>%
+              mutate(Name = as.factor(Name)) %>% 
+              mutate(Height = gsub("-", ".", Height)) %>% #remove the - from height and convert to feet
+              mutate(across(c("Height"), as.numeric)) #turning height into a numeric column
+str(cleanBio)
 ```
 
-## Including Plots
+By cleaning the three data frames in R, at the end of this step you should have the following three clean data frames: defClean, offClean, and bioClean. Print the structures of these data frames.
 
-You can also embed plots, for example:
+## Part two: Tidying
+For the following questions, work on the cleaned data frames defClean, offClean, and bioClean.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+1. Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named stat.
+
+     Answer
+     
+```{r}
+
 ```
+     
+2. Compare the distributions of the defensive statistics. What defensive skills are rare?
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+     Answer
+     
+```{r}
+
+```
+     
+3. Did ISU have better defense against Iowa or Notre Dame? Answer this question by creating a scatterplot with x- and y-axes being the number of solo tackles (of each player). A large number of solo tackles is an indicator of good defense.
+
+     Answer
+     
+```{r}
+
+```
+     
+Now turn our attention to the player biography.
+
+4. Separate the Hometown column into two columns, namely the city and the state. Print the first few rows of these two columns. (Hint: look at the sep= argument of separate)
+
+     Answer
+     
+```{r}
+
+```
+     
+5. How many players are there from each state?
+
+     Answer
+     
+```{r}
+
+```
+     
+## Part three: Joining data frames
+
+1. Find which states do the ISU defensive and offensive players come from. Create an appropriate summary.
+
+     Answer
+     
+```{r}
+
+```
+     
+2. How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?
+
+     Answer
+     
+```{r}
+
+```
+     
+3. Which ISU player(s) made big progress over the last year? Compare the 2019 and the 2018 data here.
+
+     Answer
+     
+```{r}
+
+```
+     
