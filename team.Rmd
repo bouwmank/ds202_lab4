@@ -32,17 +32,17 @@ Biography <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
      Answer
      
 ```{r}
-cleanDef <- defense %>%
+defClean <- defense %>%
               mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
               mutate_if(is.character, as.numeric, na.rm = TRUE)
-str(cleanDef)
+str(defClean)
 
-cleanOff <- offensive %>%
+offClean <- offensive %>%
               mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
               mutate_if(is.character, as.numeric, na.rm = TRUE)
-cleanOff <- cleanOff %>% 
+offClean <- offClean %>% 
                 replace(is.na(.), 0)
-str(cleanOff)
+str(offClean)
 ```
      
 3. Change the Height column in biogrpahy into numeric. (Hint: Use a unit that works well)
@@ -50,11 +50,11 @@ str(cleanOff)
      Answer
      
 ```{r}
-cleanBio <- Biography %>%
+bioClean <- Biography %>%
               mutate(Name = as.factor(Name)) %>% 
               mutate(Height = gsub("-", ".", Height)) %>% #remove the - from height and convert to feet
               mutate(across(c("Height"), as.numeric)) #turning height into a numeric column
-str(cleanBio)
+str(bioClean)
 ```
 
 By cleaning the three data frames in R, at the end of this step you should have the following three clean data frames: defClean, offClean, and bioClean. Print the structures of these data frames.
@@ -67,7 +67,11 @@ For the following questions, work on the cleaned data frames defClean, offClean,
      Answer
      
 ```{r}
+defClean %>%
+  pivot_longer(Tackles_Solo:Pass_PB, names_to = "Stat", values_to = "Score") -> defClean
 
+str(defClean)
+print(defClean)
 ```
      
 2. Compare the distributions of the defensive statistics. What defensive skills are rare?
