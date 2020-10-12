@@ -109,8 +109,8 @@ Now turn our attention to the player biography.
      
 ```{r}
 bioClean <- bioClean %>% 
-  separate(Hometown, into = c("City", "state"), sep = ",")
-head(bioClean)
+  separate(Hometown, into = c("City", "state"), sep = ",") #separate hometown into city state and separate by commas
+head(bioClean) #print 
 ```
      
 5. How many players are there from each state?
@@ -160,10 +160,14 @@ offBio %>%
      
 2. How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?
 
-     Answer
+      We can see that Brock Purdy's performance has the largest effect on the team.
      
-```{r}
-
+```{r, dependson = c("load", "clean", "stat")}
+offClean$YdsResponsibleFor <- rowSums(offClean[,c("Rushing_YDS", "Receiving_YDS", "Passing_YDS")], na.rm=TRUE)
+offClean %>%
+  group_by(Name) %>%
+  summarize(AvgYdsResponsibleFor = mean(YdsResponsibleFor)) %>%
+  arrange(desc(AvgYdsResponsibleFor))
 ```
      
 3. Which ISU player(s) made big progress over the last year? Compare the 2019 and the 2018 data here.
@@ -172,7 +176,16 @@ offBio %>%
      
 ```{r}
 defense18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Defensive')
-offensive18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Offensive')
-Biography18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
+defCleanWide18 <- defense18 %>%
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)
+defCleanWide19 <- defClean
+
+defCleanWide18 <- defCleanWide18 %>%
+  group_by(Name) %>%
+  select(-Opponent_Opponent) %>%
+  summarize_all(list(mean), na.rm=TRUE) 
+
 ```
+
      
