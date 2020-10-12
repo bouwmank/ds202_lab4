@@ -72,6 +72,7 @@ For the following questions, work on the cleaned data frames defClean, offClean,
      Cleaned data pivoted
      
 ```{r}
+defCleanOrig <- defClean
 defClean %>%
   pivot_longer(Tackles_Solo:Pass_PB, names_to = "stat", values_to = "Score") -> defClean
 
@@ -176,16 +177,84 @@ offClean %>%
      
 ```{r}
 defense18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Defensive')
-defCleanWide18 <- defense18 %>%
+defClean18 <- defense18 %>%
               mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
               mutate_if(is.character, as.numeric, na.rm = TRUE)
-defCleanWide19 <- defClean
+defClean19 <- defCleanOrig
 
-defCleanWide18 <- defCleanWide18 %>%
+defClean18 <- defClean18 %>%
   group_by(Name) %>%
   select(-Opponent_Opponent) %>%
   summarize_all(list(mean), na.rm=TRUE) 
 
-```
+defClean19 <- defClean19 %>%
+  group_by(Name) %>%
+  select(-Opponent_Opponent) %>%
+  summarize_all(list(mean), na.rm=TRUE) 
 
-     
+colnames(defClean18) <- paste("Last", colnames(defClean18), sep = "_")
+colnames(defClean19) <- paste("This", colnames(defClean19), sep = "_")
+DefCompare <- inner_join(defClean18, defClean19, by = c("Last_Name" = "This_Name"))
+DefCompare$DiffTacklesSolo <- DefCompare$This_Tackles_Solo - DefCompare$Last_Tackles_Solo
+DefCompare$DiffTacklesSack <- DefCompare$This_Tackles_Sack - DefCompare$Last_Tackles_Sack
+DefCompare$DiffTacklesAsst <- DefCompare$This_Tackles_ASST - DefCompare$Last_Tackles_ASST
+
+DefCompare %>%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %>%
+  arrange(desc(DiffTacklesSack)) %>%
+  head(1)
+DefCompare %>%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %>%
+  arrange(desc(DiffTacklesAsst)) %>%
+  head(1)
+DefCompare %>%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %>%
+  arrange(desc(DiffTacklesSolo)) %>%
+  head(1)
+```
+```
+ These comparisons show the statistics for who improved the most on the season. O'Rien Vance most improved in sacks and assisted tackles and Anthony Johnson most improved in solo tackles.
+
+```
+```{r}
+off18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Offensive')
+offClean18 <- off18 %>%
+              mutate(across(c("Name", "Opponent_Opponent"), as.factor)) %>%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)
+offClean19 <- offClean
+
+offClean18 <- offClean18 %>%
+  group_by(Name) %>%
+  select(-Opponent_Opponent) %>%
+  summarize_all(list(mean), na.rm=TRUE) 
+
+offClean19 <- offClean19 %>%
+  group_by(Name) %>%
+  select(-Opponent_Opponent) %>%
+  summarize_all(list(mean), na.rm=TRUE) 
+
+colnames(offClean18) <- paste("Last", colnames(offClean18), sep = "_")
+colnames(offClean19) <- paste("This", colnames(offClean19), sep = "_")
+OffCompare <- inner_join(offClean18, offClean19, by = c("Last_Name" = "This_Name"))
+OffCompare$DiffRecYds <- OffCompare$This_Receiving_YDS - OffCompare$Last_Receiving_YDS
+OffCompare$DiffPassingYds <- OffCompare$This_Passing_YDS - OffCompare$Last_Passing_YDS
+OffCompare$DiffRushingYds <- OffCompare$This_Rushing_YDS - OffCompare$Last_Rushing_YDS
+
+
+OffCompare %>%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %>%
+  arrange(desc(DiffRushingYds)) %>%
+  head(1)
+OffCompare %>%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %>%
+  arrange(desc(DiffRecYds)) %>%
+  head(1)
+OffCompare %>%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %>%
+  arrange(desc(DiffPassingYds)) %>%
+  head(1)
+```
+```
+There are existing null values but they dont interfere with finding who most improved. Charlie Kolar improved the most on charging yards. Johnnie Lang improved the most on rushing yards. Brock Purdy on passing yards.
+
+```

@@ -469,7 +469,8 @@ str(bioClean)</code></pre>
 <li><p>Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named stat.</p>
 <p>Cleaned data pivoted</p></li>
 </ol>
-<pre class="r"><code>defClean %&gt;%
+<pre class="r"><code>defCleanOrig &lt;- defClean
+defClean %&gt;%
   pivot_longer(Tackles_Solo:Pass_PB, names_to = &quot;stat&quot;, values_to = &quot;Score&quot;) -&gt; defClean
 
 str(defClean)</code></pre>
@@ -658,15 +659,108 @@ offClean %&gt;%
 <p>Answer</p></li>
 </ol>
 <pre class="r"><code>defense18 &lt;- read_excel(&#39;cyclonesFootball2018.xlsx&#39;, sheet=&#39;Defensive&#39;)
-defCleanWide18 &lt;- defense18 %&gt;%
+defClean18 &lt;- defense18 %&gt;%
               mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;%
               mutate_if(is.character, as.numeric, na.rm = TRUE)
-defCleanWide19 &lt;- defClean
+defClean19 &lt;- defCleanOrig
 
-defCleanWide18 &lt;- defCleanWide18 %&gt;%
+defClean18 &lt;- defClean18 %&gt;%
   group_by(Name) %&gt;%
   select(-Opponent_Opponent) %&gt;%
-  summarize_all(list(mean), na.rm=TRUE) </code></pre>
+  summarize_all(list(mean), na.rm=TRUE) 
+
+defClean19 &lt;- defClean19 %&gt;%
+  group_by(Name) %&gt;%
+  select(-Opponent_Opponent) %&gt;%
+  summarize_all(list(mean), na.rm=TRUE) 
+
+colnames(defClean18) &lt;- paste(&quot;Last&quot;, colnames(defClean18), sep = &quot;_&quot;)
+colnames(defClean19) &lt;- paste(&quot;This&quot;, colnames(defClean19), sep = &quot;_&quot;)
+DefCompare &lt;- inner_join(defClean18, defClean19, by = c(&quot;Last_Name&quot; = &quot;This_Name&quot;))
+DefCompare$DiffTacklesSolo &lt;- DefCompare$This_Tackles_Solo - DefCompare$Last_Tackles_Solo
+DefCompare$DiffTacklesSack &lt;- DefCompare$This_Tackles_Sack - DefCompare$Last_Tackles_Sack
+DefCompare$DiffTacklesAsst &lt;- DefCompare$This_Tackles_ASST - DefCompare$Last_Tackles_ASST
+
+DefCompare %&gt;%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %&gt;%
+  arrange(desc(DiffTacklesSack)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name     DiffTacklesSolo DiffTacklesSack DiffTacklesAsst
+##   &lt;fct&gt;                   &lt;dbl&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Vance, O&#39;Rien            1.56           0.405            1.76</code></pre>
+<pre class="r"><code>DefCompare %&gt;%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %&gt;%
+  arrange(desc(DiffTacklesAsst)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name     DiffTacklesSolo DiffTacklesSack DiffTacklesAsst
+##   &lt;fct&gt;                   &lt;dbl&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Vance, O&#39;Rien            1.56           0.405            1.76</code></pre>
+<pre class="r"><code>DefCompare %&gt;%
+  select(Last_Name, DiffTacklesSolo, DiffTacklesSack, DiffTacklesAsst) %&gt;%
+  arrange(desc(DiffTacklesSolo)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name         DiffTacklesSolo DiffTacklesSack DiffTacklesAsst
+##   &lt;fct&gt;                       &lt;dbl&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Johnson , Anthony            1.78           0.154             0.5</code></pre>
+<pre><code> These comparisons show the statistics for who improved the most on the season. O&#39;Rien Vance most improved in sacks and assisted tackles and Anthony Johnson most improved in solo tackles.
+</code></pre>
+<pre class="r"><code>off18 &lt;- read_excel(&#39;cyclonesFootball2018.xlsx&#39;, sheet=&#39;Offensive&#39;)
+offClean18 &lt;- off18 %&gt;%
+              mutate(across(c(&quot;Name&quot;, &quot;Opponent_Opponent&quot;), as.factor)) %&gt;%
+              mutate_if(is.character, as.numeric, na.rm = TRUE)</code></pre>
+<pre><code>## Warning: Problem with `mutate()` input `Passing_CMP-ATT`.
+## ℹ NAs introduced by coercion
+## ℹ Input `Passing_CMP-ATT` is `.Primitive(&quot;as.double&quot;)(`Passing_CMP-ATT`, na.rm = TRUE)`.</code></pre>
+<pre><code>## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion</code></pre>
+<pre class="r"><code>offClean19 &lt;- offClean
+
+offClean18 &lt;- offClean18 %&gt;%
+  group_by(Name) %&gt;%
+  select(-Opponent_Opponent) %&gt;%
+  summarize_all(list(mean), na.rm=TRUE) 
+
+offClean19 &lt;- offClean19 %&gt;%
+  group_by(Name) %&gt;%
+  select(-Opponent_Opponent) %&gt;%
+  summarize_all(list(mean), na.rm=TRUE) 
+
+colnames(offClean18) &lt;- paste(&quot;Last&quot;, colnames(offClean18), sep = &quot;_&quot;)
+colnames(offClean19) &lt;- paste(&quot;This&quot;, colnames(offClean19), sep = &quot;_&quot;)
+OffCompare &lt;- inner_join(offClean18, offClean19, by = c(&quot;Last_Name&quot; = &quot;This_Name&quot;))
+OffCompare$DiffRecYds &lt;- OffCompare$This_Receiving_YDS - OffCompare$Last_Receiving_YDS
+OffCompare$DiffPassingYds &lt;- OffCompare$This_Passing_YDS - OffCompare$Last_Passing_YDS
+OffCompare$DiffRushingYds &lt;- OffCompare$This_Rushing_YDS - OffCompare$Last_Rushing_YDS
+
+
+OffCompare %&gt;%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %&gt;%
+  arrange(desc(DiffRushingYds)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name     DiffRecYds DiffPassingYds DiffRushingYds
+##   &lt;fct&gt;              &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+## 1 Lang, Johnnie          2            NaN           13.2</code></pre>
+<pre class="r"><code>OffCompare %&gt;%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %&gt;%
+  arrange(desc(DiffRecYds)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name      DiffRecYds DiffPassingYds DiffRushingYds
+##   &lt;fct&gt;               &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+## 1 Kolar, Charlie       43.1            NaN            NaN</code></pre>
+<pre class="r"><code>OffCompare %&gt;%
+  select(Last_Name, DiffRecYds, DiffPassingYds, DiffRushingYds) %&gt;%
+  arrange(desc(DiffPassingYds)) %&gt;%
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   Last_Name    DiffRecYds DiffPassingYds DiffRushingYds
+##   &lt;fct&gt;             &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+## 1 Purdy, Brock        NaN           81.3          -11.6</code></pre>
+<pre><code>There are existing null values but they dont interfere with finding who most improved. Charlie Kolar improved the most on charging yards. Johnnie Lang improved the most on rushing yards. Brock Purdy on passing yards.
+</code></pre>
 </div>
 
 
